@@ -48,8 +48,6 @@ struct PhotoDetailView: View {
                     HStack {
                         Spacer()
                         favoriteButton
-//                            .animation(.spring, value: store.photo.favorite)
-//                            .transition(.slide)
                         Spacer()
                     }
                     .padding(.top, 32)

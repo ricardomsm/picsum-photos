@@ -1,7 +1,7 @@
 import ComposableArchitecture
 
 @Reducer
-public struct PhotoList: Sendable {
+public struct PhotoList {
     @ObservableState
     @CasePathable
     public enum State: Equatable {
@@ -40,11 +40,10 @@ public struct PhotoList: Sendable {
             switch action {
             case .view(.loadPhotos):
                 state = .loading
-                return .run { send in
-                    let photos = try await self.photosService.fetchPhotos()
+                return .run { [photosService] send in
+                    let photos = try await photosService.fetchPhotos()
                     await send(.photoResponse(photos))
                 } catch: { error, send in
-                    print(error)
                     await send(.errorResponse)
                 }
 
@@ -53,23 +52,18 @@ public struct PhotoList: Sendable {
                     .photosByAuthor[author]?
                     .firstIndex(where: { $0.id == photoId })
                     .map { index in
-                        state.modify(\.loaded) { loaded in
-                            print(loaded)
-                            loaded.photosByAuthor[author]?[index].favorite.toggle()
-                            print(loaded)
-                        }
+                        state.modify(\.loaded) { loaded in loaded.photosByAuthor[author]?[index].favorite.toggle() }
                     }
 
                 return .none
 
             case .view(.photoRowWasTapped(let photoId)):
                 return .run(
-                    operation: { send in
-                        let photoDetail = try await self.photosService.fetchPhotoDetail(photoId.rawValue)
+                    operation: { [photosService] send in
+                        let photoDetail = try await photosService.fetchPhotoDetail(photoId.rawValue)
                         await send(.photoDetailResponse(photoDetail))
                     },
                     catch: { error, send in
-                        print(error)
                         await send(.errorResponse)
                     }
                 )

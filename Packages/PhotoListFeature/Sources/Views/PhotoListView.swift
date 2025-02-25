@@ -76,7 +76,7 @@ public struct PhotoListView: View {
             photoListView(with: state)
                 .sheet(
                     item: $store.scope(state: \.loaded?.photoDetail, action: \.photoDetail),
-                    content: PhotoDetailView.init(store:)
+                    content: PhotoDetailView.init
                 )
                 .presentationDetents([.large])
 
